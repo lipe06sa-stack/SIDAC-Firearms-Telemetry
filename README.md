@@ -30,6 +30,14 @@ SIDAC is a conceptual Picatinny-rail-mounted telemetry unit that leverages a low
     - Dataset collection of live-fire cycles to train anomaly detection thresholds.
     - BLE telemetry streaming to a companion mobile application for real-time visualization.
 
+  ## 5. Kinematic Signature Simulation
+
+This graph demonstrates the theoretical mathematical model of the Glock G22 Gen 5 recoil kinematics, contrasting a healthy firing cycle with a mechanical anomaly (such as recoil spring fatigue).
+
+![Theoretical Recoil Kinematics](recoil_simulation_graph.png)
+
+---
+
 ##  Hardware Schematic & Pinout
 
 This section defines the core electrical interconnects for the SIDAC prototype. The MPU6050 communicates via the I2C protocol.
