@@ -29,3 +29,24 @@ SIDAC is a conceptual Picatinny-rail-mounted telemetry unit that leverages a low
     - Shock survivability testing of the cantilevered PCB enclosure.
     - Dataset collection of live-fire cycles to train anomaly detection thresholds.
     - BLE telemetry streaming to a companion mobile application for real-time visualization.
+  
+
+Designing a rail-mounted diagnostic unit requires careful consideration of parasitic mass and shock propagation to avoid inducing malfunctions.
+
+1. Mass Budget & Center of Gravity (CG)
+
+Constraint: The complete SIDAC unit (enclosure + PCB + battery) must not exceed 120 grams. Exceeding this limit, particularly on the front of a polymer-frame pistol, significantly alters the moment of inertia, impeding the muzzle's natural return from recoil and potentially causing "muzzle dip."
+
+CG Position: The CG of the SIDAC module must be located directly over the Picatinny clamp's transverse slot. A forward-biased CG induces a cantilevered moment on the rail under recoil, which can crack polymer frame rails on the Glock 22 Gen 5.
+
+2. Shock Isolation Strategy (Low-Pass Mechanical Filter)
+
+Direct Coupling Avoidance: The PCB must not be rigidly screwed into the enclosure. Recoil forces exceeding 1000 G acting on rigid standoffs will shear solder joints and crack MLCC (Multilayer Ceramic Capacitor) components.
+
+Implementation: Design the enclosure with a "suspended tray" mount using Sorbothane (durometer 40 Shore OO) grommets. The grommets act as a mechanical low-pass filter, attenuating high-frequency (>500 Hz) shock transient spikes from the slide's steel-on-steel impact, protecting the MEMS sensor and oscillator.
+
+3. 3D-Printing Design for Additive Manufacturing (DfAM)
+
+Wall Thickness: Minimum 2.5mm walls with a 30% gyroid infill using PA-CF (Carbon Fiber Nylon) or tough resin. This prevents resonant buzzing that distorts accelerometer data.
+
+Serviceability: Design a sliding dovetail cover for the battery compartment, secured by a captured M3 locking bolt. Avoid snap-fit closures in the recoil impulse path; they will fail instantly under live-fire vibration, ejecting the battery.
