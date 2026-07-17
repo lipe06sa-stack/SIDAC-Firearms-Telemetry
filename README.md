@@ -1,7 +1,9 @@
 # Project SIDAC: Intelligent Diagnostic & Telemetry System for Handgun Failure Detection
 
 **Conceptual Design Document & Proof of Concept**
+
 **Author:** Filipe José Martins de Sá, Mechanical Engineer
+
 **Status:** R&D Portfolio Concept
 
 ## 1. Problem Statement
