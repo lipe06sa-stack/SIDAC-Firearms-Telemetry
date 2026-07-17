@@ -36,6 +36,38 @@ This graph demonstrates the theoretical mathematical model of the Glock G22 Gen 
 
 ![Theoretical Recoil Kinematics](recoil_simulation_graph.png)
 
+graph TD
+    %% Initialization
+    START((System Boot)) --> INIT[Initialize MPU6050: <br>±16g Range, 1kHz Sample Rate]
+    INIT --> I2C_READ[Read Raw I2C Data Buffer: <br>Ax, Ay, Az, Gx, Gy, Gz]
+    
+    %% Signal Processing Stage
+    subgraph DSP [Digital Signal Processing]
+        I2C_READ --> FILTER[Low-Pass Butterworth Filter <br>fc = 200Hz: Remove high-freq handling noise]
+        FILTER --> MAG[Compute Resultant Acceleration Magnitude: <br>|A| = sqrt(Ax^2 + Ay^2 + Az^2)]
+        MAG --> THRESH{Static Threshold Detection: <br>|A| > 5g?}
+    end
+
+    %% Detection & Pattern Matching
+    THRESH -- No --> IDLE[Idle Mode / Log Background Noise]
+    THRESH -- Yes (Recoil Event Detected) --> PEAK_DETECT[Peak Detection Algorithm: <br>Find Max |A| and Time to Peak]
+    
+    subgraph Diagnostic_Pattern [Pattern Matching Engine]
+        PEAK_DETECT --> EXTRACT[Extract Feature Vector: <br>1. Peak G-Force <br>2. Impulse Duration (ms) <br>3. Damping Ratio]
+        EXTRACT --> COMPARE{Anomaly Detection: <br>Compare Feature Vector <br>against Baseline Profile}
+        
+        COMPARE -->|Peak < 700g & Duration > 25ms| FAIL_SPRING[Classification: <br>Recoil Spring Fatigue]
+        COMPARE -->|Irregular Damping & High Std Dev| FAIL_FRICTION[Classification: <br>Slide Rail Friction / Fouling]
+        COMPARE -->|Within Normal Tolerances| NORMAL[Classification: <br>Normal Firing Cycle]
+    end
+
+    %% Telemetry Output
+    NORMAL --> PACKET[Format BLE Data Packet: <br>Type: Normal, Stats: JSON]
+    FAIL_SPRING --> PACKET
+    FAIL_FRICTION --> PACKET
+    
+    PACKET --> TX[Transmit Telemetry via BLE <br>to Mobile / Armorer Dashboard]
+    TX --> I2C_READ
 ---
 
 ##  Hardware Schematic & Pinout
