@@ -29,40 +29,30 @@ SIDAC is a conceptual Picatinny-rail-mounted telemetry unit that leverages a low
     - Shock survivability testing of the cantilevered PCB enclosure.
     - Dataset collection of live-fire cycles to train anomaly detection thresholds.
     - BLE telemetry streaming to a companion mobile application for real-time visualization.
-  
-graph TD
-    %% Initialization
-    START((System Boot)) --> INIT[Initialize MPU6050: <br>±16g Range, 1kHz Sample Rate]
-    INIT --> I2C_READ[Read Raw I2C Data Buffer: <br>Ax, Ay, Az, Gx, Gy, Gz]
-    
-    %% Signal Processing Stage
-    subgraph DSP [Digital Signal Processing]
-        I2C_READ --> FILTER[Low-Pass Butterworth Filter <br>fc = 200Hz: Remove high-freq handling noise]
-        FILTER --> MAG[Compute Resultant Acceleration Magnitude: <br>|A| = sqrt(Ax^2 + Ay^2 + Az^2)]
-        MAG --> THRESH{Static Threshold Detection: <br>|A| > 5g?}
-    end
 
-    %% Detection & Pattern Matching
-    THRESH -- No --> IDLE[Idle Mode / Log Background Noise]
-    THRESH -- Yes (Recoil Event Detected) --> PEAK_DETECT[Peak Detection Algorithm: <br>Find Max |A| and Time to Peak]
-    
-    subgraph Diagnostic_Pattern [Pattern Matching Engine]
-        PEAK_DETECT --> EXTRACT[Extract Feature Vector: <br>1. Peak G-Force <br>2. Impulse Duration (ms) <br>3. Damping Ratio]
-        EXTRACT --> COMPARE{Anomaly Detection: <br>Compare Feature Vector <br>against Baseline Profile}
-        
-        COMPARE -->|Peak < 700g & Duration > 25ms| FAIL_SPRING[Classification: <br>Recoil Spring Fatigue]
-        COMPARE -->|Irregular Damping & High Std Dev| FAIL_FRICTION[Classification: <br>Slide Rail Friction / Fouling]
-        COMPARE -->|Within Normal Tolerances| NORMAL[Classification: <br>Normal Firing Cycle]
-    end
+## 2. Hardware Schematic & Pinout
 
-    %% Telemetry Output
-    NORMAL --> PACKET[Format BLE Data Packet: <br>Type: Normal, Stats: JSON]
-    FAIL_SPRING --> PACKET
-    FAIL_FRICTION --> PACKET
-    
-    PACKET --> TX[Transmit Telemetry via BLE <br>to Mobile / Armorer Dashboard]
-    TX --> I2C_READ
-  
+This section defines the core electrical interconnects for the SIDAC prototype. The MPU6050 communicates via the I2C protocol.
+
+### I2C Communication Interface (ESP32 ↔ MPU6050)
+
+| ESP32 DevKit Pin | MPU6050 Pin | Wire Function | Electrical Notes |
+| :--- | :--- | :--- | :--- |
+| `GPIO 22` | `SCL` | I2C Clock | Serial Clock line. A 4.7kΩ pull-up resistor to 3.3V is typically required but often integrated onboard the MPU6050 breakout. |
+| `GPIO 21` | `SDA` | I2C Data | Serial Data line. Requires 4.7kΩ pull-up to 3.3V. |
+| `3V3` | `VCC` | Power Rail | Clean 3.3V supply from the ESP32's onboard regulator. Decouple with a 100nF ceramic capacitor at the MPU6050 pin. |
+| `GND` | `GND` | Common Ground | Single-point star ground connection to minimize ground loop noise. |
+
+### Power Management & Battery Connections
+
+| ESP32 DevKit Pin | Component | Wire Function | Electrical Specifications |
+| :--- | :--- | :--- | :--- |
+| `5V` / `VIN` | LiPo Battery Management Board (e.g., TP4056) `OUT+` | Unregulated Input Power | 3.7V nominal LiPo input. The ESP32's AMS1117 regulator steps this down to 3.3V for the board. Operating range: 3.0V - 4.2V. |
+| `GND` | LiPo Battery Management Board `OUT-` | Battery Ground | Direct connection. |
+| LiPo Mgmt Board `B+` | LiPo Cell (3.7V 300mAh) `Positive Terminal` | Cell Positive | Protected 103450 cell with high discharge rate (1C min) recommended for voltage sag stability. |
+| LiPo Mgmt Board `B-` | LiPo Cell (3.7V 300mAh) `Negative Terminal` | Cell Negative | Direct connection to cell. |
+
+### System Wiring Diagram (Text-Based)
 
 Designing a rail-mounted diagnostic unit requires careful consideration of parasitic mass and shock propagation to avoid inducing malfunctions.
 
