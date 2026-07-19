@@ -85,3 +85,4 @@ This section defines the core electrical interconnects for the SIDAC prototype. 
 | LiPo Mgmt Board `B+` | LiPo Cell (3.7V 300mAh) `Positive Terminal` | Cell Positive | Protected 103450 cell with high discharge rate (1C min) recommended for voltage sag stability. |
 | LiPo Mgmt Board `B-` | LiPo Cell (3.7V 300mAh) `Negative Terminal` | Cell Negative | Direct connection to cell. |
 
+**The SIDAC project is part of a broader diagnostic ecosystem. For benchtop metrology and component-level validation, refer to the SIDAC-M1 Metrology Station documentation.**
