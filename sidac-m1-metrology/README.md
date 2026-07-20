@@ -1,7 +1,9 @@
 # SIDAC-M1: Estação Metrológica de Bancada para Molas Recuperadoras de Armas Curtas
 
 **Memorial Técnico e Especificação de Engenharia — Documento Preparatório**
+
 **Autor:** Filipe José Martins de Sá, Engenheiro Mecânico
+
 **Status:** Módulo de Bancada — Fase de Prototipagem e Validação de Engenharia (Fase I–II)
 
 > **Confidencialidade e Reserva de Direitos:** este documento contém informação técnica preparatória para eventual depósito de pedido de patente junto ao INPI. O autor detém a titularidade sobre a invenção aqui descrita. A divulgação deste repositório não constitui cessão de direitos de propriedade intelectual.
